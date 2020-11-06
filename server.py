@@ -17,7 +17,7 @@ from newspaper import Article
 
 app = Flask(__name__)
 
-cors = CORS(app)
+CORS(app)
 
 class LinearRegression(nn.Module):
     def __init__(self, input, output):
@@ -27,6 +27,10 @@ class LinearRegression(nn.Module):
     def forward(self, x):
         y_prediction = self.linear1(x)
         return y_prediction
+
+@app.route('/test', methods=['POST', 'GET'])
+def test():
+    return "Hello!"
 
 @app.route('/analyzeCustomerData', methods=['POST', 'GET'])
 def analyzeCustomerData():
