@@ -20,6 +20,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/test', methods=['POST', 'GET'])
 @cross_origin
 def test():
+    print("hi")
     return "Hello!"
 
 @app.route('/analyzeCustomerData', methods=['POST', 'GET'])
