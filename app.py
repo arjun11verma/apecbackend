@@ -15,7 +15,7 @@ from newspaper import Article
 app = Flask(__name__)
 
 CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
 
 @app.route('/test', methods=['GET'])
 @cross_origin()
