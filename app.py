@@ -15,12 +15,15 @@ from newspaper import Article
 app = Flask(__name__)
 
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/test', methods=['POST', 'GET'])
+@cross_origin
 def test():
     return "Hello!"
 
 @app.route('/analyzeCustomerData', methods=['POST', 'GET'])
+@cross_origin
 def analyzeCustomerData():
     post_data = (literal_eval(request.data.decode('utf8')))
     data = post_data['data']
@@ -50,6 +53,7 @@ def analyzeCustomerData():
     return {'data': return_data}
 
 @app.route('/covidData', methods=['POST', 'GET'])
+@cross_origin
 def covidData():
     post_data = (literal_eval(request.data.decode('utf8')))
 
@@ -96,6 +100,7 @@ def getNewsUrls(country):
     return output
 
 @app.route('/getArticleInfo', methods=['POST', 'GET'])
+@cross_origin
 def getArticleInfo():
     post_data = (literal_eval(request.data.decode('utf8')))
     country = post_data["country"]
