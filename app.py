@@ -9,9 +9,6 @@ from datetime import datetime, timedelta
 import requests, json
 
 import numpy as np
-import torch
-import torch.nn as nn
-from torch.autograd import Variable
 
 from newspaper import Article
 
@@ -19,62 +16,35 @@ app = Flask(__name__)
 
 CORS(app)
 
-class LinearRegression(nn.Module):
-    def __init__(self, input, output):
-        super(LinearRegression, self).__init__()
-        self.linear1 = nn.Linear(input, output)
-
-    def forward(self, x):
-        y_prediction = self.linear1(x)
-        return y_prediction
-
 @app.route('/test', methods=['POST', 'GET'])
 def test():
     return "Hello!"
 
 @app.route('/analyzeCustomerData', methods=['POST', 'GET'])
 def analyzeCustomerData():
-    print(request.data)
-
     post_data = (literal_eval(request.data.decode('utf8')))
     data = post_data['data']
 
-    print(data)
-
     y_data = []
-    x_data = []
-    xlen = 0
-    return_data = []
 
     stopping_point = len(data) - 6 if len(data) > 6 else 0
     for i in range(stopping_point, len(data)):
-        y_data.append([[float(data[i])]])
-        x_data.append([[float(i+1-stopping_point)]])
-        xlen += 1
-    
-    x_data = Variable(torch.tensor(x_data))
-    y_data = Variable(torch.tensor(y_data))
-    
-    model = LinearRegression(1, 1)
+        y_data.append([data[i]])
+        
+    base_matrix = np.array([[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6]])
+    y_data = np.array(y_data)
 
-    criterion = torch.nn.MSELoss(size_average = False) 
-    optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
-    for epoch in range(250): 
-        optimizer.zero_grad() 
-        predicted_number_of_customers = model.forward(x_data)
-        loss = criterion(predicted_number_of_customers, y_data) 
-        loss.backward()
-        optimizer.step()
-    
-    for i in range(xlen - 1, xlen + 6):
-        var = model(Variable(torch.tensor([[float(i)]]))).item()
-        var = int(var)
-        if(var < 0): var = 0
-        return_data.append(var)
-    
-    print(xlen)
-    print(x_data)
-    print(y_data)
+    transpose = np.transpose(base_matrix)
+    base_matrix = np.matmul(transpose, base_matrix)
+    y_data = np.matmul(transpose, y_data)
+
+    weights = np.matmul(np.linalg.inv(base_matrix), y_data)
+
+    return_data = []
+
+    for i in range(7, 14):
+        return_data.append(int(weights[0] + weights[1] * i))
+
     print(return_data)
 
     return {'data': return_data}
